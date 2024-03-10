@@ -1,0 +1,18 @@
+{
+  "ver": "1.0.27",
+  "uuid": "80eef265-60c3-425f-8264-6dd475302ae2",
+  "importer": "effect",
+  "compiledShaders": [
+    {
+      "glsl1": {
+        "vert": "\nprecision highp float;\nuniform mat4 cc_matViewProj;\nuniform mat4 cc_matWorld;\nattribute vec3 a_position;\nattribute vec4 a_color;\nvarying vec4 v_color;\n#if USE_TEXTURE\nattribute vec2 a_uv0;\nvarying vec2 v_uv0;\n#endif\nvoid main () {\n  vec4 pos = vec4(a_position, 1);\n  #if CC_USE_MODEL\n  pos = cc_matViewProj * cc_matWorld * pos;\n  #else\n  pos = cc_matViewProj * pos;\n  #endif\n  #if USE_TEXTURE\n  v_uv0 = a_uv0;\n  #endif\n  v_color = a_color;\n  gl_Position = pos;\n}",
+        "frag": "\nprecision highp float;\nvarying vec4 v_color;\nuniform vec2 textureSize;\nuniform int blurSize;\n#if USE_TEXTURE\nvarying vec2 v_uv0;\nuniform sampler2D texture;\n#endif\nfloat gaussian2D(vec2 v, float sigma) {\n  return (1.0 / (2.0 * 3.141592 * sigma * sigma)) * exp(-(dot(v, v)) / (2.0 * sigma * sigma));\n}\n  vec4 gaussianBlur2D(sampler2D texture, vec2 texCoord) {\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n    float sigma = float(blurSize) * 0.5;\n    float halfBlur = float(blurSize) / 2.0;\n    const int MAX_BLUR_SIZE = 10;\n    for (int x = -MAX_BLUR_SIZE; x <= MAX_BLUR_SIZE; ++x) {\n      for (int y = -MAX_BLUR_SIZE; y <= MAX_BLUR_SIZE; ++y) {\n        if (abs(float(x)) > halfBlur || abs(float(y)) > halfBlur) continue;\n        vec2 offset = vec2(float(x), float(y)) / textureSize;\n        float weight = gaussian2D(offset * textureSize, sigma);\n        color += texture2D(texture, texCoord + offset) * weight;\n        total += weight;\n      }\n    }\n    return color / total;\n  }\nvoid main() {\n    vec2 texCoord = v_uv0.xy;\n    gl_FragColor = gaussianBlur2D(texture, texCoord);\n}"
+      },
+      "glsl3": {
+        "vert": "\nprecision highp float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nin vec3 a_position;\nin vec4 a_color;\nout vec4 v_color;\n#if USE_TEXTURE\nin vec2 a_uv0;\nout vec2 v_uv0;\n#endif\nvoid main () {\n  vec4 pos = vec4(a_position, 1);\n  #if CC_USE_MODEL\n  pos = cc_matViewProj * cc_matWorld * pos;\n  #else\n  pos = cc_matViewProj * pos;\n  #endif\n  #if USE_TEXTURE\n  v_uv0 = a_uv0;\n  #endif\n  v_color = a_color;\n  gl_Position = pos;\n}",
+        "frag": "\nprecision highp float;\nin vec4 v_color;\nuniform FragConstants {\n  vec2 textureSize;\n  int blurSize;\n};\n#if USE_TEXTURE\nin vec2 v_uv0;\nuniform sampler2D texture;\n#endif\nfloat gaussian2D(vec2 v, float sigma) {\n  return (1.0 / (2.0 * 3.141592 * sigma * sigma)) * exp(-(dot(v, v)) / (2.0 * sigma * sigma));\n}\n  vec4 gaussianBlur2D(sampler2D texture, vec2 texCoord) {\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n    float sigma = float(blurSize) * 0.5;\n    float halfBlur = float(blurSize) / 2.0;\n    const int MAX_BLUR_SIZE = 10;\n    for (int x = -MAX_BLUR_SIZE; x <= MAX_BLUR_SIZE; ++x) {\n      for (int y = -MAX_BLUR_SIZE; y <= MAX_BLUR_SIZE; ++y) {\n        if (abs(float(x)) > halfBlur || abs(float(y)) > halfBlur) continue;\n        vec2 offset = vec2(float(x), float(y)) / textureSize;\n        float weight = gaussian2D(offset * textureSize, sigma);\n        color += texture2D(texture, texCoord + offset) * weight;\n        total += weight;\n      }\n    }\n    return color / total;\n  }\nvoid main() {\n    vec2 texCoord = v_uv0.xy;\n    gl_FragColor = gaussianBlur2D(texture, texCoord);\n}"
+      }
+    }
+  ],
+  "subMetas": {}
+}
