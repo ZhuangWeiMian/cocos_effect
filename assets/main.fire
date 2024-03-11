@@ -78,10 +78,10 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 7
+        "__id__": 8
       },
       {
-        "__id__": 8
+        "__id__": 9
       }
     ],
     "_prefab": null,
@@ -242,6 +242,9 @@
     "_components": [
       {
         "__id__": 6
+      },
+      {
+        "__id__": 7
       }
     ],
     "_prefab": null,
@@ -302,7 +305,7 @@
     "_enabled": true,
     "_materials": [
       {
-        "__uuid__": "90fa19c1-ca6f-4993-9ffd-321f7ecc7d80"
+        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
       }
     ],
     "_srcBlendFactor": 770,
@@ -323,6 +326,28 @@
     "_isTrimmedMode": true,
     "_atlas": null,
     "_id": "96xlwSDPpFObyIPR4aP47g"
+  },
+  {
+    "__type__": "adfc6baAF5EX4dhp3dsDHfs",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 5
+    },
+    "_enabled": true,
+    "sprite": {
+      "__id__": 6
+    },
+    "material_highlight": {
+      "__uuid__": "cf12f219-0b63-417b-a7d7-e1b1a1f03c8e"
+    },
+    "material_gaussian": {
+      "__uuid__": "90fa19c1-ca6f-4993-9ffd-321f7ecc7d80"
+    },
+    "material_mix": {
+      "__uuid__": "59c1f98a-4486-48c9-9263-522299b29f6d"
+    },
+    "_id": "0aec9aytxBsY9OA9iPcPe+"
   },
   {
     "__type__": "cc.Canvas",
