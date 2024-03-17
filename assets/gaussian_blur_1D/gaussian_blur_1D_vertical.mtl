@@ -1,0 +1,24 @@
+{
+  "__type__": "cc.Material",
+  "_name": "gaussian_blur_1D_vertical",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "9360b9ae-c4d9-4838-a938-580621c8c6a3"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      },
+      "props": {
+        "textureSize": {
+          "__type__": "cc.Vec2",
+          "x": 870,
+          "y": 489
+        }
+      }
+    }
+  }
+}

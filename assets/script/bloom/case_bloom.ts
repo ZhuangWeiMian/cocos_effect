@@ -1,4 +1,4 @@
-import RenderUtils from './render_utils';
+import RenderUtils from '../render_utils';
 const { ccclass, property } = cc._decorator;
 
 @ccclass

@@ -8,12 +8,6 @@ CCEffect %{
         texture: { value: white }
         blurSize: { value: 5.0 }
         textureSize: { value: [512, 512] }
-    - vert: vs
-      frag: fs_verticalBlur
-      properties:
-        texture: { value: white }
-        blurSize: { value: 5.0 }
-        textureSize: { value: [512, 512] }
 }%
 
 CCProgram vs %{
@@ -83,44 +77,6 @@ CCProgram fs_horizontalBlur %{
       total += weight;
     }
 
-    gl_FragColor = vec4(1.0);
-    // gl_FragColor = color / total;
-  }
-}%
-
-CCProgram fs_verticalBlur %{
-  precision highp float;
-
-  #include <cc-global>
-  #include <texture>
-  uniform sampler2D texture;
-
-  uniform FragConstants {
-    vec2 textureSize;
-    float blurSize;
-  };
-
-  in vec2 v_texCoord;
-
-  float gaussian(float x, float sigma) {
-    return (1.0 / sqrt(2.0 * 3.141592 * sigma * sigma)) * exp(-(x * x) / (2.0 * sigma * sigma));
-  }
-
-  void main () {
-    float sigma = blurSize * 0.5;
-    vec4 color = vec4(0.0);
-    float total = 0.0;
-    float halfBlur = blurSize * 0.5;
-
-    const int MAX_BLUR_SIZE = 10;
-    for (int y = -MAX_BLUR_SIZE; y <= MAX_BLUR_SIZE; ++y) {
-      if (abs(float(y)) > halfBlur) continue;
-      float weight = gaussian(float(y), sigma);
-      color += texture2D(texture, v_texCoord + vec2(0.0, y) / textureSize) * weight;
-      total += weight;
-    }
-
     gl_FragColor = color / total;
-    // gl_FragColor = vec4(1.0);
   }
 }%

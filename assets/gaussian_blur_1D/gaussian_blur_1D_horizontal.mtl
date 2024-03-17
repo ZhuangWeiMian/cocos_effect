@@ -1,6 +1,6 @@
 {
   "__type__": "cc.Material",
-  "_name": "gaussian_blur_1D",
+  "_name": "gaussian_blur_1D_horizontal",
   "_objFlags": 0,
   "_native": "",
   "_effectAsset": {
@@ -10,13 +10,14 @@
   "_techniqueData": {
     "0": {
       "defines": {
-        "USE_TEXTURE": false
-      }
-    },
-    "1": {
-      "props": {},
-      "defines": {
-        "USE_TEXTURE": false
+        "USE_TEXTURE": true
+      },
+      "props": {
+        "textureSize": {
+          "__type__": "cc.Vec2",
+          "x": 870,
+          "y": 489
+        }
       }
     }
   }
