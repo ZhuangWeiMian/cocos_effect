@@ -1,0 +1,18 @@
+{
+  "ver": "1.0.27",
+  "uuid": "cfee8f03-8555-4a16-a89a-ab94086688c8",
+  "importer": "effect",
+  "compiledShaders": [
+    {
+      "glsl1": {
+        "vert": "\nprecision mediump float;\nuniform mat4 cc_matViewProj;\nuniform mat4 cc_matWorld;\nattribute vec3 a_position;\nattribute vec4 a_color;\nvarying vec4 v_color;\nvarying vec4 v_pos;\n#if USE_TEXTURE\n  attribute vec2 a_uv0;\n  varying vec2 v_uv0;\n#endif\nvoid main() {\n  vec4 pos = vec4(a_position, 1);\n  #if CC_USE_MODEL\n    pos = cc_matViewProj * cc_matWorld * pos;\n  #else\n    pos = cc_matViewProj * pos;\n  #endif\n  #if USE_TEXTURE\n    v_uv0 = a_uv0;\n  #endif\n  v_color = a_color;\n  v_pos = pos;\n  gl_Position = pos;\n}",
+        "frag": "\nprecision mediump float;\n#if USE_ALPHA_TEST\n#endif\nvarying vec4 v_pos;\n#if USE_TEXTURE\n  varying vec2 v_uv0;\n  uniform sampler2D texture;\n#endif\nvec2 random2(vec2 st) {\n  st = vec2(dot(st, vec2(127.1, 311.7)),\n  dot(st, vec2(269.5, 183.3)));\n  return - 1.0 + 2.0 * fract(sin(st) * 43758.5453123);\n}\nfloat noise(vec2 st) {\n  vec2 i = floor(st);\n  vec2 f = fract(st);\n  vec2 u = f*f * (3.0 - 2.0 * f);\n  return mix(mix(dot(random2(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)),\n  dot(random2(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),\n  mix(dot(random2(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)),\n  dot(random2(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);\n}\nvoid main() {\n  vec3 color = vec3(0.0);\n  vec2 st = v_pos.xy;\n  vec2 pos = vec2(st * 10.0);\n  color = vec3(noise(pos) * 0.5 + 0.5);\n  gl_FragColor = vec4(1.0 - color, 1.0);\n}"
+      },
+      "glsl3": {
+        "vert": "\nprecision mediump float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nin vec3 a_position;\nin vec4 a_color;\nout vec4 v_color;\nout vec4 v_pos;\n#if USE_TEXTURE\n  in vec2 a_uv0;\n  out vec2 v_uv0;\n#endif\nvoid main() {\n  vec4 pos = vec4(a_position, 1);\n  #if CC_USE_MODEL\n    pos = cc_matViewProj * cc_matWorld * pos;\n  #else\n    pos = cc_matViewProj * pos;\n  #endif\n  #if USE_TEXTURE\n    v_uv0 = a_uv0;\n  #endif\n  v_color = a_color;\n  v_pos = pos;\n  gl_Position = pos;\n}",
+        "frag": "\nprecision mediump float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\n#if USE_ALPHA_TEST\n  uniform ALPHA_TEST {\n    float alphaThreshold;\n  };\n#endif\nin vec4 v_pos;\n#if USE_TEXTURE\n  in vec2 v_uv0;\n  uniform sampler2D texture;\n#endif\nvec2 random2(vec2 st) {\n  st = vec2(dot(st, vec2(127.1, 311.7)),\n  dot(st, vec2(269.5, 183.3)));\n  return - 1.0 + 2.0 * fract(sin(st) * 43758.5453123);\n}\nfloat noise(vec2 st) {\n  vec2 i = floor(st);\n  vec2 f = fract(st);\n  vec2 u = f*f * (3.0 - 2.0 * f);\n  return mix(mix(dot(random2(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)),\n  dot(random2(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),\n  mix(dot(random2(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)),\n  dot(random2(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);\n}\nvoid main() {\n  vec3 color = vec3(0.0);\n  vec2 st = v_pos.xy;\n  vec2 pos = vec2(st * 10.0);\n  color = vec3(noise(pos) * 0.5 + 0.5);\n  gl_FragColor = vec4(1.0 - color, 1.0);\n}"
+      }
+    }
+  ],
+  "subMetas": {}
+}

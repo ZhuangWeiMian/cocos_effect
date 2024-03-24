@@ -1,0 +1,99 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+
+CCEffect %{
+techniques:
+  - passes:
+      - vert: vs
+        frag: fs
+        blendState:
+          targets:
+            - blend: true
+        rasterizerState:
+          cullMode: none
+        properties:
+          texture: { value: white }
+          alphaThreshold: { value: 0.5 }
+
+}%
+
+
+CCProgram vs %{
+precision mediump float;
+
+#include <cc-global>
+#include <cc-local>
+
+in vec3 a_position;
+in vec4 a_color;
+out vec4 v_color;
+out vec4 v_pos;
+
+#if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+#endif
+
+void main() {
+  vec4 pos = vec4(a_position, 1);
+  
+  #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+  #else
+    pos = cc_matViewProj * pos;
+  #endif
+  
+  #if USE_TEXTURE
+    v_uv0 = a_uv0;
+  #endif
+  
+  v_color = a_color;
+  v_pos = pos;
+  
+  gl_Position = pos;
+}
+}%
+
+
+CCProgram fs %{
+precision mediump float;
+
+#include <cc-global>
+#include <cc-local>
+#include <alpha-test>
+#include <texture>
+
+in vec4 v_pos;
+
+#if USE_TEXTURE
+  in vec2 v_uv0;
+  uniform sampler2D texture;
+#endif
+
+vec2 random2(vec2 st) {
+  st = vec2(dot(st, vec2(127.1, 311.7)),
+  dot(st, vec2(269.5, 183.3)));
+  return - 1.0 + 2.0 * fract(sin(st) * 43758.5453123);
+}
+
+float noise(vec2 st) {
+  vec2 i = floor(st);
+  vec2 f = fract(st);
+  
+  vec2 u = f*f * (3.0 - 2.0 * f);
+  
+  return mix(mix(dot(random2(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)),
+  dot(random2(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),
+  mix(dot(random2(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)),
+  dot(random2(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);
+}
+
+void main() {
+  vec3 color = vec3(0.0);
+  vec2 st = v_pos.xy;
+  
+  vec2 pos = vec2(st * 10.0);
+  
+  color = vec3(noise(pos) * 0.5 + 0.5);
+  gl_FragColor = vec4(1.0 - color, 1.0);
+}
+}%
