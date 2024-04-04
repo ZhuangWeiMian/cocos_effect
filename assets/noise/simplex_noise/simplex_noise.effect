@@ -1,0 +1,160 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+
+CCEffect %{
+techniques:
+  - passes:
+      - vert: vs
+        frag: fs
+        blendState:
+          targets:
+            - blend: true
+        rasterizerState:
+          cullMode: none
+        properties:
+          texture: { value: white }
+          alphaThreshold: { value: 0.5 }
+
+}%
+
+
+CCProgram vs %{
+precision mediump float;
+
+#include <cc-global>
+#include <cc-local>
+
+in vec3 a_position;
+in vec4 a_color;
+out vec4 v_color;
+out vec4 v_pos;
+
+#if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+#endif
+
+void main() {
+  vec4 pos = vec4(a_position, 1);
+  
+  #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+  #else
+    pos = cc_matViewProj * pos;
+  #endif
+  
+  #if USE_TEXTURE
+    v_uv0 = a_uv0;
+  #endif
+  
+  v_color = a_color;
+  v_pos = pos;
+  
+  gl_Position = pos;
+}
+}%
+
+
+CCProgram fs %{
+precision mediump float;
+
+#include <cc-global>
+#include <cc-local>
+#include <alpha-test>
+#include <texture>
+
+in vec4 v_pos;
+
+#if USE_TEXTURE
+  in vec2 v_uv0;
+  uniform sampler2D texture;
+#endif
+
+//
+// Description : Array and textureless GLSL 2D simplex noise function.
+//      Author : Ian McEwan, Ashima Arts.
+//  Maintainer : stegu
+//     Lastmod : 20110822 (ijm)
+//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
+//               Distributed under the MIT License. See LICENSE file.
+//               https://github.com/ashima/webgl-noise
+//               https://github.com/stegu/webgl-noise
+// 
+// 原理上，Simplex 噪声的生成过程与 Perlin 噪声类似，都是通过在网格点上定义随机梯度向量，并在网格内插值得到。不过，Simplex 噪声使用了一种称为 Simplex 的网格（在二维情况下是等腰直角三角形网格），这使得每个噪声值只需要参考周围的三个网格点，而 Perlin 噪声需要参考周围的四个网格点。
+
+// 代码中定义了一些辅助函数：
+
+// mod289：将输入向量的每个分量限制在 0 到 289 之间，以避免在后续计算中出现截断误差。
+// permute：对输入向量执行置换操作，用于生成梯度向量。
+// snoise 函数首先计算出输入点在 Simplex 网格中的位置，然后计算出该点与周围三个网格点的距离向量。接着，使用 permute 函数生成随机梯度向量，并计算出梯度向量与距离向量的点积。最后，通过一种称为 "surftlet" 的插值函数将这三个点积插值得到最终的噪声值。
+
+vec3 mod289(vec3 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec2 mod289(vec2 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec3 permute(vec3 x) {
+  return mod289(((x * 34.0) + 10.0) * x);
+}
+
+float snoise(vec2 v)
+{
+  const vec4 C = vec4(0.211324865405187, // (3.0-sqrt(3.0))/6.0
+  0.366025403784439, // 0.5*(sqrt(3.0)-1.0)
+  - 0.577350269189626, // -1.0 + 2.0 * C.x
+0.024390243902439); // 1.0 / 41.0
+// First corner
+vec2 i = floor(v + dot(v, C.yy));
+vec2 x0 = v - i + dot(i, C.xx);
+
+// Other corners
+vec2 i1;
+//i1.x = step( x0.y, x0.x ); // x0.x > x0.y ? 1.0 : 0.0
+//i1.y = 1.0 - i1.x;
+i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+// x0 = x0 - 0.0 + 0.0 * C.xx ;
+// x1 = x0 - i1 + 1.0 * C.xx ;
+// x2 = x0 - 1.0 + 2.0 * C.xx ;
+vec4 x12 = x0.xyxy + C.xxzz;
+x12.xy -= i1;
+
+// Permutations
+i = mod289(i); // Avoid truncation effects in permutation
+vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
++ i.x + vec3(0.0, i1.x, 1.0));
+
+vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);
+m = m*m ;
+m = m*m ;
+
+// Gradients: 41 points uniformly over a line, mapped onto a diamond.
+// The ring size 17*17 = 289 is close to a multiple of 41 (41*7 = 287)
+
+vec3 x = 2.0 * fract(p * C.www) - 1.0;
+vec3 h = abs(x) - 0.5;
+vec3 ox = floor(x + 0.5);
+vec3 a0 = x - ox;
+
+// Normalise gradients implicitly by scaling m
+// Approximation of: m *= inversesqrt( a0*a0 + h*h );
+m *= 1.79284291400159 - 0.85373472095314 * (a0 * a0 + h*h);
+
+// Compute final noise value at P
+vec3 g;
+g.x = a0.x * x0.x + h.x * x0.y;
+g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+return 130.0 * dot(m, g);
+}
+
+void main() {
+vec3 color = vec3(0.0);
+vec2 st = v_pos.xy;
+
+vec2 pos = vec2(st * 10.0);
+
+color = vec3(snoise(pos) * 0.5 + 0.5);
+gl_FragColor = vec4(1.0 - color, 1.0);
+}
+}%
