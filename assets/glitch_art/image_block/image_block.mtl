@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "image_block",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "7ab7ccce-da00-4b10-8f0b-3dd71a3a4be7"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}

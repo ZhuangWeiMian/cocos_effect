@@ -1,0 +1,98 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+
+CCEffect %{
+techniques:
+  - passes:
+      - vert: vs
+        frag: fs
+        blendState:
+          targets:
+            - blend: true
+        rasterizerState:
+          cullMode: none
+        properties:
+          texture: { value: white }
+          alphaThreshold: { value: 0.5 }
+
+}%
+
+
+CCProgram vs %{
+precision mediump float;
+
+#include <cc-global>
+#include <cc-local>
+
+in vec3 a_position;
+in vec4 a_color;
+out vec4 v_color;
+out vec4 v_pos;
+
+#if USE_TEXTURE
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+#endif
+
+void main() {
+  vec4 pos = vec4(a_position, 1);
+  
+  #if CC_USE_MODEL
+    pos = cc_matViewProj * cc_matWorld * pos;
+  #else
+    pos = cc_matViewProj * pos;
+  #endif
+  
+  #if USE_TEXTURE
+    v_uv0 = a_uv0;
+  #endif
+  
+  v_color = a_color;
+  v_pos = pos;
+  
+  gl_Position = pos;
+}
+}%
+
+
+CCProgram fs %{
+precision mediump float;
+
+#include <cc-global>
+#include <cc-local>
+#include <alpha-test>
+#include <texture>
+
+in vec4 v_pos;
+
+#if USE_TEXTURE
+  in vec2 v_uv0;
+  uniform sampler2D texture;
+#endif
+
+float randomNoise(vec2 seed)
+{
+  return mod(sin(dot(seed * floor(cc_time.x * 10.0), vec2(17.13, 3.71))) * 43758.5453123, 1.0);
+}
+
+float randomNoise(float seed)
+{
+  // return rand(vec2(seed, 1.0));
+  float y = fract(sin(seed) * 100000.0);
+  return y;
+}
+
+void main() {
+  vec2 st  = v_uv0.xy * 5.0;
+
+  // 生成随机色块
+  float noise = randomNoise(floor(st));
+  // 加强强度
+  float displaceNoise = pow(noise, 8.0) * pow(noise, 8.0);
+
+  vec4 colorR = texture2D(texture, vec2(v_uv0.x + displaceNoise * 0.05 * randomNoise(7.0), v_uv0.y));
+  vec4 colorG = texture2D(texture, vec2(v_uv0.x, v_uv0.y));
+  vec4 colorB = texture2D(texture, vec2(v_uv0.x - displaceNoise * 0.05 * randomNoise(7.0), v_uv0.y));
+
+  gl_FragColor = vec4(colorR.r, colorG.g, colorB.b, 1.0);
+}
+}%
