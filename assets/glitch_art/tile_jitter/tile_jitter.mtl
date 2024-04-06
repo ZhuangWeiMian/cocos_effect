@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "tile_jitter",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "87347327-4e0d-4129-9657-8e9e871e206d"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}
