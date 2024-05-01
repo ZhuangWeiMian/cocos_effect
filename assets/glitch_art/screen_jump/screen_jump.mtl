@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "screen_jump",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "66b562b1-74fa-4dfe-be12-94a02626c3b5"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}
