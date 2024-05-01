@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "analog_noise",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "f5fb678a-275c-48a0-b1c6-2dc24edb457e"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}
