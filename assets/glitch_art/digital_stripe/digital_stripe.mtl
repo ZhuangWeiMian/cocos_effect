@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.Material",
+  "_name": "digital_stripe",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "a17933a7-f22f-41d1-9344-f261a67f74f3"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      },
+      "props": {
+        "noiseTexture": {
+          "__uuid__": "a29bd38f-5c08-4fd5-81d8-5baf64b77bf7"
+        }
+      }
+    }
+  }
+}
