@@ -82,16 +82,19 @@ float randomNoise(float seed)
 }
 
 void main() {
-  vec2 st  = v_uv0.xy * 5.0;
+  vec2 st  = v_uv0.xy;
 
   // 生成随机色块
-  float noise = randomNoise(floor(st));
+  float noise1 = randomNoise(floor(st.xy * 5.0));
+  float noise2 = randomNoise(floor(st.xy * 3.0));
   // 加强强度
-  float displaceNoise = pow(noise, 8.0) * pow(noise, 8.0);
+  float displaceNoise1 = pow(noise1, 2.0);
+  float displaceNoise2 = pow(noise2, 6.0);
+  float displaceNoise = fract(displaceNoise1 * displaceNoise2 * 10.0);
 
-  vec4 colorR = texture2D(texture, vec2(v_uv0.x + displaceNoise * 0.05 * randomNoise(7.0), v_uv0.y));
+  vec4 colorR = texture2D(texture, vec2(v_uv0.x + displaceNoise * 0.2 * randomNoise(7.0), v_uv0.y));
   vec4 colorG = texture2D(texture, vec2(v_uv0.x, v_uv0.y));
-  vec4 colorB = texture2D(texture, vec2(v_uv0.x - displaceNoise * 0.05 * randomNoise(7.0), v_uv0.y));
+  vec4 colorB = texture2D(texture, vec2(v_uv0.x - displaceNoise * 0.3 * randomNoise(7.0), v_uv0.y));
 
   gl_FragColor = vec4(colorR.r, colorG.g, colorB.b, 1.0);
 }

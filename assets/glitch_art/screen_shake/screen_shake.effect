@@ -87,7 +87,7 @@ void main() {
   float jumpIndensity = 0.5;
   
   float shake = (randomNoise(vec2(cc_time.x, 2.0)) - 0.5) * jumpIndensity;
-  vec4 colorG = texture2D(texture, fract(vec2(st.x, shake+ st.y)));
+  vec4 colorG = texture2D(texture, fract(vec2(st.x, shake + st.y)));
   
   gl_FragColor = vec4(colorG.r, colorG.g, colorG.b, 1.0);
 }
